@@ -5,20 +5,25 @@ using UnityEngine;
 public class Square : MonoBehaviour
 {
 
-    public Color color
-    {
-        get
-        {
-            return _color;
-        }
-        set
-        {
-            gameObject.GetComponent<SpriteRenderer>().color = value;
-            _color = value;
-        }
-    }
-    private Color _color;
+    public Color color;
+
+    [HideInInspector]
     public bool activate;
+
+    void Start()
+    {
+        GetComponent<SpriteRenderer>().color = color;
+    }
+
+    public void ResetColor()
+    {
+            GetComponent<SpriteRenderer>().color = color;
+    }
+
+    public void SetColor(Color c)
+    {
+            GetComponent<SpriteRenderer>().color = c;
+    }
 
     public void Destroy()
     {

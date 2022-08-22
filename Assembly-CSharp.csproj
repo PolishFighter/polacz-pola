@@ -36,8 +36,13 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets/Scripts/GameManager.cs" />
      <Compile Include="Assets/Scripts/Square.cs" />
+     <Compile Include="Assets/Scripts/Level.cs" />
+     <Compile Include="Assets/Scripts/ArrayLayout.cs" />
+     <Compile Include="Assets/Scripts/GameManager.cs" />
+     <Compile Include="Assets/Scripts/GUI.cs" />
+     <None Include="Assets/Fonts/RubikBurned/OFL.txt" />
+     <None Include="Assets/Fonts/Rubik_Marker_Hatch/OFL.txt" />
     <Reference Include="UnityEngine">
         <HintPath>/home/jacob/Unity/Hub/Editor/2020.3.25f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
