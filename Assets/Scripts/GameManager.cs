@@ -4,18 +4,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public struct Cord
+public struct Coord
 {
     public int x, y;
 
-    public Cord(int x, int y)
+    public Coord(int x, int y)
     {
             this.x = x;
             this.y = y;
 
-            bool Equals(Cord cord)
+            bool Equals(Coord coord)
             {
-                return cord.x == x && cord.y == y;
+                return coord.x == x && coord.y == y;
             }
     }
 }
@@ -29,21 +29,30 @@ public class GameManager : MonoBehaviour
 {
     public GameObject square;
     public AudioSource pop;
+    public AudioSource nextLevelSound;
     public Level[] levels = new Level[]{};
     public int timeBonusX = 100;
+    
     private Transform boardParent;
     private Transform floor;
+
+    private Coord[] direction = new Coord[]{
+        new Coord(-1, 0),
+        new Coord(1, 0),
+        new Coord(0, 1),
+        new Coord(0, -1),
+    };
     
 
     private int levelInd = 0;
     Square[,] board;
-    List<Cord> selected = new List<Cord>();
+    List<Coord> selected = new List<Coord>();
     bool isSelected = false;
     Color selectedColor;
 
     private GameState gameState = GameState.gameplay;
     float timeCounter;
-    private int score = 0;
+    public static int score = 0;
     GUI gui;
     int[] countToPoints = new int[] {0, 0, 0, 0, 1, 4, 8, 16, 32, 64, 128, 256, 512};
     
@@ -76,6 +85,7 @@ public class GameManager : MonoBehaviour
 
         if(gameState == GameState.nextLevel)
         {
+            nextLevelSound.Play();
             pop.Stop();
             AddBonusForTime();
             LoadNextLevel();
@@ -145,33 +155,33 @@ public class GameManager : MonoBehaviour
 
         if(Input.GetMouseButtonDown(0) && !isSelected)
         {
-            Cord cord;
+            Coord coord;
             
-            if(MouseToCord(out cord))
+            if(MouseTocoord(out coord))
             {
-                if(board[cord.x, cord.y] != null)
+                if(board[coord.x, coord.y] != null)
                 {
-                    selected.Add(cord);
-                    board[cord.x, cord.y].SetSelectedColor();
+                    selected.Add(coord);
+                    board[coord.x, coord.y].SetSelectedColor();
                     isSelected = true;     
-                    selectedColor = board[cord.x, cord.y].color;
+                    selectedColor = board[coord.x, coord.y].color;
                 }
             }
         }
        if(Input.GetMouseButton(0) && isSelected)
        {
-           Cord cord;
+           Coord coord;
 
-           if(MouseToCord(out cord))
+           if(MouseTocoord(out coord))
            {
-                if(board[cord.x, cord.y] != null && board[cord.x, cord.y].color == selectedColor &&  !selected.Contains(cord) && Valid(cord, selected[selected.Count-1]) && selected.Count < 12)
+                if(board[coord.x, coord.y] != null && board[coord.x, coord.y].color == selectedColor &&  !selected.Contains(coord) && Valid(coord, selected[selected.Count-1]) && selected.Count < 12)
                 {
-                    selected.Add(cord);
+                    selected.Add(coord);
                 }
-                else if(selected.Count > 1 && cord.Equals(selected[selected.Count-2]))
+                else if(selected.Count > 1 && coord.Equals(selected[selected.Count-2]))
                 {
-                    Cord lastCord = selected[selected.Count-1];
-                    board[lastCord.x, lastCord.y].SetDefaultColor();
+                    Coord lastcoord = selected[selected.Count-1];
+                    board[lastcoord.x, lastcoord.y].SetDefaultColor();
                     selected.RemoveAt(selected.Count-1);
                 }
            }
@@ -246,8 +256,8 @@ public class GameManager : MonoBehaviour
         {
             for(int j = 0; j < rows; j++)
             {
-                Cord cord = new Cord(i, j);
-                Square sq = Instantiate(square, CordToPos(cord), Quaternion.identity ,boardParent).GetComponent<Square>();
+                Coord coord = new Coord(i, j);
+                Square sq = Instantiate(square, coordToPos(coord), Quaternion.identity ,boardParent).GetComponent<Square>();
                 sq.color = board.rows[j].GetColor(i);
                 sq.SetDefaultColor();
                 this.board[i,j] = sq;
@@ -256,34 +266,34 @@ public class GameManager : MonoBehaviour
 
     }
 
-    private Vector2 CordToPos(Cord cord)
+    private Vector2 coordToPos(Coord coord)
     {
-        return new Vector2(cord.x - (float)(board.GetLength(0)-1)/2f, ((float)board.GetLength(1)-1)/2f - cord.y);
+        return new Vector2(coord.x - (float)(board.GetLength(0)-1)/2f, ((float)board.GetLength(1)-1)/2f - coord.y);
     }
 
 
-    private bool MouseToCord(out Cord cord)
+    private bool MouseTocoord(out Coord coord)
     {
         Vector2 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
         float a = board.GetLength(0) % 2 == 0 ? 0 : 0.5f;
         float b = board.GetLength(1) % 2 == 0 ? 0 : 0.5f;
-        cord = new Cord( (int)(Mathf.FloorToInt(worldPosition.x + a) + (int)((board.GetLength(0))/2)), (int)( (int)((board.GetLength(1))/2) -  Mathf.CeilToInt(worldPosition.y-b)));
-        return cord.x >= 0 && cord.x < board.GetLength(0) && cord.y >= 0 && cord.y < board.GetLength(1);
+        coord = new Coord( (int)(Mathf.FloorToInt(worldPosition.x + a) + (int)((board.GetLength(0))/2)), (int)( (int)((board.GetLength(1))/2) -  Mathf.CeilToInt(worldPosition.y-b)));
+        return coord.x >= 0 && coord.x < board.GetLength(0) && coord.y >= 0 && coord.y < board.GetLength(1);
     }
 
-    private bool Valid(Cord cord1, Cord cord2)
+    private bool Valid(Coord coord1, Coord coord2)
     {
-        bool a = ((cord1.x + 1 == cord2.x || cord1.x - 1 == cord2.x)  && cord1.y == cord2.y) || ((cord1.y + 1 == cord2.y  || cord1.y - 1 == cord2.y) && cord1.x == cord2.x);
+        bool a = ((coord1.x + 1 == coord2.x || coord1.x - 1 == coord2.x)  && coord1.y == coord2.y) || ((coord1.y + 1 == coord2.y  || coord1.y - 1 == coord2.y) && coord1.x == coord2.x);
         
         return a;
     }
 
-    private bool ContainsCord(Cord cord)
+    private bool Containscoord(Coord coord)
     {
         for(int i = 0; i < selected.Count; i++)
         {
-            if(selected[i].x == cord.x && selected[i].y == cord.y)
+            if(selected[i].x == coord.x && selected[i].y == coord.y)
                 return true;
         }
 
@@ -308,50 +318,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private bool SquareIsFill(Cord cord, Color color)
-    {
-        return cord.x - 1 >= 0 && cord.x + 1 < board.GetLength(0) && cord.y - 1 >= 0 && cord.y + 1 < board.GetLength(1) &&
-         board[cord.x - 1, cord.y]  &&  board[cord.x + 1, cord.y] != null  && board[cord.x, cord.y - 1] != null  &&  board[cord.x, cord.y + 1] != null &&
-         board[cord.x-1, cord.y].color == color && board[cord.x+1, cord.y].color == color && board[cord.x, cord.y-1].color == color && board[cord.x, cord.y + 1].color == color;
-    }
-
-    private int CountMovesFromRight(Cord cord)
-    {
-        int ans = 1;
-        if(cord.y + 1 < board.GetLength(1) && board[cord.x, cord.y + 1] != null &&  board[cord.x, cord.y + 1].color  == board[cord.x, cord.y].color)
-        {
-            ans = Mathf.Max(ans, ans + CountMovesFromRight(new Cord(cord.x, cord.y+1)));
-        }
-        if(cord.x + 1 < board.GetLength(0) && board[cord.x+1, cord.y] != null &&  board[cord.x+1, cord.y].color  == board[cord.x, cord.y].color)
-        {
-            ans = Mathf.Max(ans, ans + CountMovesFromRight(new Cord(cord.x + 1, cord.y)));
-        }
-        return ans;
-    }
-
-    private int CountMovesFromLeft(Cord cord)
-    {
-        int ans = 1;
-        if(cord.y + 1 < board.GetLength(1) && board[cord.x, cord.y + 1] != null &&  board[cord.x, cord.y + 1].color  == board[cord.x, cord.y].color)
-        {
-            ans = Mathf.Max(ans, ans + CountMovesFromLeft(new Cord(cord.x, cord.y+1)));
-        }
-        if(cord.x - 1 >= 0 && board[cord.x-1, cord.y] != null &&  board[cord.x-1, cord.y].color  == board[cord.x, cord.y].color)
-        {
-            ans = Mathf.Max(ans, ans + CountMovesFromLeft(new Cord(cord.x - 1, cord.y)));
-        }
-        return ans;
-    }
-    private bool IsInSquare(Cord cord)
-    {
-        Color c = board[cord.x, cord.y].color;
-        return cord.x+1 < board.GetLength(0) && cord.y + 1 < board.GetLength(1) && 
-         null != board[cord.x+1, cord.y] && null != board[cord.x,cord.y+1] &&  null != board[cord.x+1,cord.y+1] && 
-        c == board[cord.x+1, cord.y].color && c == board[cord.x,cord.y+1].color &&  c == board[cord.x+1,cord.y+1].color; 
-    }
-
     private void InitVars()
     {
+        score = 0;
         gui = FindObjectOfType<GUI>();
         boardParent = GameObject.Find("Board").transform;
     }
@@ -362,6 +331,8 @@ public class GameManager : MonoBehaviour
     {
         if(levelInd >= levels.Length)
         {
+            InitGameOver();
+            gui.gameOverPanel.SetActive(false);
             SceneManager.LoadScene(2);
             return;
         }
@@ -380,82 +351,63 @@ public class GameManager : MonoBehaviour
             return true;
         return false;
     }
+
+    private void ClearBoardVisited(ref bool[,] boardVisited)
+    {
+        for(int i = 0; i < board.GetLength(0); i++)
+        {
+                for(int j = 0; j < board.GetLength(1); j++)
+                {
+                    boardVisited[i, j] = false;
+                }
+        }
+    }
+    //BFS
+    private int FindMaxPath(Color color,Coord coord, ref bool[,] boardVisited)
+    {
+        boardVisited[coord.x, coord.y] = true;
+        bool minOne = false;
+        int ans = 0;
+        for(int i = 0; i < 4; i++)
+        {
+            
+            if(
+                coord.x + direction[i].x >= 0 && coord.x + direction[i].x < board.GetLength(0) &&
+                coord.y + direction[i].y >= 0 && coord.y + direction[i].y < board.GetLength(1) &&
+                board[coord.x + direction[i].x, coord.y + direction[i].y] != null &&
+                board[coord.x + direction[i].x, coord.y + direction[i].y].color == color &&
+                !boardVisited[coord.x + direction[i].x, coord.y + direction[i].y]
+            )
+            {
+                minOne = true;
+                ans = Mathf.Max(ans, 
+                    FindMaxPath(color, new Coord(coord.x + direction[i].x, coord.y + direction[i].y),ref boardVisited)
+                );
+            } 
+        }
+        boardVisited[coord.x, coord.y] = false;
+        if(!minOne)
+            return 1;
+        return ans + 1;
+    }
     private bool CheckGameOver()
     {
-        int max = 0;
-        bool[,] boardVisited = new bool[board.GetLength(0), board.GetLength(1)];
-
-        for(int i = 0; i < board.GetLength(0); i++)
-        {
-            for(int j = 0; j < board.GetLength(1); j++)
-            {
-                boardVisited[i, j] = false;
-            }
-        }
-
-        for(int i = 0; i < board.GetLength(0); i++)
-        {
-            for(int j = 0; j < board.GetLength(1); j++)
-            {
-                if(!boardVisited[i, j] && board[i, j] != null)
-                {
-                    Color color = board[i, j].color;
-                    Queue<Cord> toCheck = new Queue<Cord>();
-                    toCheck.Enqueue(new Cord(i, j));
-                    int visitedSquaresCount = 0;
-      
-                    while(toCheck.Count > 0)
-                    {
-                        Cord cord = toCheck.Dequeue();
-                        visitedSquaresCount++;
-                        boardVisited[cord.x, cord.y] = true;
-
-
-                        if(cord.x - 1 >= 0 && board[cord.x - 1, cord.y] != null && board[cord.x-1, cord.y].color == color && !boardVisited[cord.x-1, cord.y])
-                        {
-                            toCheck.Enqueue(new Cord(cord.x - 1, cord.y));
-                            boardVisited[cord.x - 1, cord.y] = true;
-                        }
-
-                        if(cord.x + 1 < board.GetLength(0) &&  board[cord.x + 1, cord.y] != null && board[cord.x+1, cord.y].color == color && !boardVisited[cord.x+1, cord.y])
-                        {
-                            toCheck.Enqueue(new Cord(cord.x + 1, cord.y));
-                            boardVisited[cord.x + 1, cord.y] = true;
-                        }
-
-
-                        if(cord.y - 1 >= 0 && board[cord.x, cord.y - 1] != null && board[cord.x, cord.y - 1].color == color && !boardVisited[cord.x, cord.y - 1])
-                        {
-                            toCheck.Enqueue(new Cord(cord.x, cord.y - 1));
-                            boardVisited[cord.x, cord.y - 1] = true;
-                        }
-
-                        if(cord.y + 1 < board.GetLength(1) &&  board[cord.x, cord.y + 1] != null && board[cord.x, cord.y + 1].color == color && !boardVisited[cord.x, cord.y + 1])
-                        {
-                            toCheck.Enqueue(new Cord(cord.x, cord.y + 1));
-                            boardVisited[cord.x, cord.y + 1] = true;
-                        }
-                    }
-
-                    max = visitedSquaresCount > max ? visitedSquaresCount : max;
-
-
-                }
-            }
-        }
-        bool pos = true;
-        
+        int max = 1;
+        bool[,] boardVisited = new bool[board.GetLength(0),board.GetLength(1)];
         for(int i = 0; i < board.GetLength(0); i++)
         {
             for(int j = 0; j < board.GetLength(1); j++)
             {
                 if(board[i, j] == null)
                     continue;
-                if(CountMovesFromLeft(new Cord(i, j)) > 4 || CountMovesFromRight(new Cord(i, j)) > 4 || IsInSquare(new Cord(i, j)))
-                    pos = false;
+
+                ClearBoardVisited(ref boardVisited);
+                int mP = FindMaxPath(board[i, j].color, new Coord(i, j), ref boardVisited);
+                
+                max = Mathf.Max(max, mP);
             }
         }
-        return max > 5 ? false : pos;
+        return max < 4;
     }
 
     private void LoadGameOverScreen()
