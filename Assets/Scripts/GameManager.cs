@@ -22,13 +22,15 @@ public struct Cord
 
 public enum GameState
 {
-    gameplay, pause, gameOver, nextLevel
+    gameplay, gameOver, nextLevel
 }
 
 public class GameManager : MonoBehaviour
 {
     public GameObject square;
+    public AudioSource pop;
     public Level[] levels = new Level[]{};
+    public int timeBonusX = 100;
     private Transform boardParent;
     private Transform floor;
     
@@ -53,7 +55,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if(gameState == GameState.gameplay || gameState == GameState.pause)
+        if(gameState == GameState.gameplay)
         {
             if(gameState == GameState.gameplay)
                 Move();
@@ -66,6 +68,7 @@ public class GameManager : MonoBehaviour
             if(TimeOut())
             {
                 gameState = GameState.gameOver;
+                InitGameOver();
                 gui.gameOverPanel.SetActive(true);
                 gui.timer.text = "00:00";
             }
@@ -73,22 +76,62 @@ public class GameManager : MonoBehaviour
 
         if(gameState == GameState.nextLevel)
         {
+            pop.Stop();
+            AddBonusForTime();
             LoadNextLevel();
         }
 
     }
+    private void InitGameOver()
+    {
+        gui.scoreGameOver.text = "Wynik\n" + score.ToString();
 
-    private void LoadMenu()
+        if(PlayerPrefs.HasKey("HighScore"))
+        {
+            if( PlayerPrefs.GetInt("HighScore") < score)
+            {
+                PlayerPrefs.SetInt("HighScore", score);
+            }
+            else
+            {
+               gui.newHighScore.SetActive(false); 
+            }
+        }
+        else
+        {
+            PlayerPrefs.SetInt("HighScore", score);
+            gui.newHighScore.SetActive(true);
+        }
+
+        gui.highScoreGameOver.text = "Najwyższy wynik\n" +  PlayerPrefs.GetInt("HighScore").ToString();
+    }
+
+    private void AddBonusForTime()
+    {
+        if(levelInd >= levels.Length)
+            return;
+        score +=  (int) ((1 - timeCounter/levels[levelInd].maxTime) * timeBonusX);
+        UpdateScore();
+    }
+
+    public void LoadMenu()
     {
         SceneManager.LoadScene(0);
     }
     private void UpdateTime()
     {
         timeCounter -= Time.deltaTime;
-        string minutes = Mathf.Floor(timeCounter / 60).ToString("00");
-        string seconds = (timeCounter % 60).ToString("00");
-     
-        gui.timer.text = string.Format("{0}:{1}",minutes, seconds);
+        int minutes = (int)Mathf.Floor(timeCounter / 60);
+        int seconds = ((int) timeCounter % 60);
+        if(minutes < 1 && seconds < 11)
+        {
+            gui.timer.color = Color.red;
+        }
+        else
+        {
+           gui.timer.color = Color.white; 
+        }
+        gui.timer.text = string.Format("{0}:{1}",minutes.ToString("00"), seconds.ToString("00"));
         
     }
 
@@ -109,7 +152,7 @@ public class GameManager : MonoBehaviour
                 if(board[cord.x, cord.y] != null)
                 {
                     selected.Add(cord);
-                    board[cord.x, cord.y].SetColor(Color.black);
+                    board[cord.x, cord.y].SetSelectedColor();
                     isSelected = true;     
                     selectedColor = board[cord.x, cord.y].color;
                 }
@@ -128,7 +171,7 @@ public class GameManager : MonoBehaviour
                 else if(selected.Count > 1 && cord.Equals(selected[selected.Count-2]))
                 {
                     Cord lastCord = selected[selected.Count-1];
-                    board[lastCord.x, lastCord.y].ResetColor();
+                    board[lastCord.x, lastCord.y].SetDefaultColor();
                     selected.RemoveAt(selected.Count-1);
                 }
            }
@@ -138,14 +181,14 @@ public class GameManager : MonoBehaviour
            {
                for(int i = 0; i < 12; i++)
                {
-                   board[selected[i].x, selected[i].y].SetColor(new Color(0,0,0,0.85f) );
+                   board[selected[i].x, selected[i].y].SetLimitColor();
                }
            }
            else
            {
                 for(int i = 0; i < selected.Count; i++)
                {
-                   board[selected[i].x, selected[i].y].SetColor(new Color(0,0,0, 1f));
+                   board[selected[i].x, selected[i].y].SetSelectedColor();
                }
            }
        }
@@ -157,9 +200,10 @@ public class GameManager : MonoBehaviour
             UpdateScore();
             if(selected.Count >= 4 && selected.Count <= 12)
             {
+                    pop.Play();
                     for(int i = 0; i < selected.Count; i++)
                     { 
-                        Destroy(board[selected[i].x, selected[i].y].gameObject);
+                        board[selected[i].x, selected[i].y].Destroy();
                         board[selected[i].x, selected[i].y] = null;
                     }
             }
@@ -167,7 +211,7 @@ public class GameManager : MonoBehaviour
             {
                     for(int i = 0; i < selected.Count; i++)
                     { 
-                        board[selected[i].x, selected[i].y].ResetColor();
+                        board[selected[i].x, selected[i].y].SetDefaultColor();
                     }
             }
             
@@ -205,7 +249,7 @@ public class GameManager : MonoBehaviour
                 Cord cord = new Cord(i, j);
                 Square sq = Instantiate(square, CordToPos(cord), Quaternion.identity ,boardParent).GetComponent<Square>();
                 sq.color = board.rows[j].GetColor(i);
-                sq.ResetColor();
+                sq.SetDefaultColor();
                 this.board[i,j] = sq;
             }   
         }
@@ -407,7 +451,7 @@ public class GameManager : MonoBehaviour
             {
                 if(board[i, j] == null)
                     continue;
-                if(CountMovesFromLeft(new Cord(i, j)) > 3 || CountMovesFromRight(new Cord(i, j)) > 3 || IsInSquare(new Cord(i, j)))
+                if(CountMovesFromLeft(new Cord(i, j)) > 4 || CountMovesFromRight(new Cord(i, j)) > 4 || IsInSquare(new Cord(i, j)))
                     pos = false;
             }
         }

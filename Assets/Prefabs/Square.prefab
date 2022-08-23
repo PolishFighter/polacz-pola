@@ -97,8 +97,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b01cc08bfaca5b477ab35c972062c82b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particleDestroy: {fileID: 6505155851323334475, guid: 765d7435311c35f61a2489d0c0edec0d, type: 3}
   color: {r: 0, g: 0, b: 0, a: 0}
-  activate: 0
+  selectedColor: {r: 1, g: 1, b: 1, a: 1}
+  limitColor: {r: 0.8392157, g: 0.8392157, b: 0.8392157, a: 1}
+  spriteRenderer: {fileID: 7574337643888214991}
 --- !u!61 &-2599958179961195574
 BoxCollider2D:
   m_ObjectHideFlags: 0

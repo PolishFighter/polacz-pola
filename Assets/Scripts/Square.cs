@@ -4,20 +4,31 @@ using UnityEngine;
 
 public class Square : MonoBehaviour
 {
-
+    public GameObject particleDestroy;
     public Color color;
+    public Color selectedColor;
+    public Color limitColor;
 
-    [HideInInspector]
-    public bool activate;
+    public SpriteRenderer spriteRenderer;
 
     void Start()
     {
-        GetComponent<SpriteRenderer>().color = color;
+        spriteRenderer.color = color;
     }
 
-    public void ResetColor()
+    public void SetDefaultColor()
     {
-            GetComponent<SpriteRenderer>().color = color;
+            spriteRenderer.color = color;
+    }
+
+    public void SetSelectedColor()
+    {
+        spriteRenderer.color = selectedColor;
+    }
+
+    public void SetLimitColor()
+    {
+        spriteRenderer.color = limitColor;
     }
 
     public void SetColor(Color c)
@@ -27,7 +38,7 @@ public class Square : MonoBehaviour
 
     public void Destroy()
     {
-        activate = false;
-        this.gameObject.SetActive(false);
+        Destroy(Instantiate(particleDestroy, transform.position, Quaternion.identity, transform.parent), 2f);
+        Destroy(this.gameObject);
     }
 }

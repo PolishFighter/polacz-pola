@@ -19,13 +19,13 @@ public class ArrayLayout
             switch(row[i])
             {
                 case SquareColor.red:
-                    return Color.red;
+                    return new Color(233f/255f, 79f/255f, 55f/255f);
                 case SquareColor.yellow:
-                    return Color.yellow;
+                    return new Color(251f/255f, 175f/255f, 0/255f);
                 case SquareColor.blue:
-                    return Color.blue;
+                    return new Color(18f/255f, 130f/255f, 162f/255f);
                 case SquareColor.green:
-                    return Color.green;
+                    return new Color(80f/255f, 210f/255f, 90f/255f);
                 default:
                     return Color.black;
             }
