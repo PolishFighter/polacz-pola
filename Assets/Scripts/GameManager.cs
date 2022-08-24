@@ -85,7 +85,8 @@ public class GameManager : MonoBehaviour
 
         if(gameState == GameState.nextLevel)
         {
-            nextLevelSound.Play();
+            if(levelInd < levels.Length - 1)
+                nextLevelSound.Play();
             pop.Stop();
             AddBonusForTime();
             LoadNextLevel();

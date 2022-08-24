@@ -1185,6 +1185,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a60c779008d7f59ed9070c80233fbc3c, type: 2}
   - {fileID: 11400000, guid: 0cba2b5ce2a51b4359a7993cecb6932a, type: 2}
   - {fileID: 11400000, guid: db5b30b92b4c97eeab27773d0c73373e, type: 2}
+  - {fileID: 11400000, guid: 0a0a09b78645082aba1fa135dd51f906, type: 2}
   timeBonusX: 200
 --- !u!4 &1650235112
 Transform:

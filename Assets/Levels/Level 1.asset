@@ -19,4 +19,4 @@ MonoBehaviour:
     - row: 01000000010000000100000002000000
     - row: 01000000000000000000000002000000
   levelName: "\u017Buk"
-  maxTime: 30
+  maxTime: 10

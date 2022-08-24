@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum SquareColor
 {
-    red, yellow, blue, green
+    red, yellow, blue, green, pink
 }
 
 [System.Serializable]
@@ -26,6 +26,8 @@ public class ArrayLayout
                     return new Color(18f/255f, 130f/255f, 162f/255f);
                 case SquareColor.green:
                     return new Color(80f/255f, 210f/255f, 90f/255f);
+                case SquareColor.pink:
+                    return new Color(244f/255f, 151f/255f, 142f/255f);
                 default:
                     return Color.black;
             }
