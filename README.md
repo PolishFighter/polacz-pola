@@ -5,11 +5,11 @@ Zadaniem gracza jest zaznaczenie wszystkich sąsiadujących pól o tym samym kol
 ## Punktacja
 ### Zaznaczenie
 Liczba punktów $p_{1}$ za zaznaczenie $n$ pól wynosi 
-$$p_{1}=(n-3)^2$$ 
+$$p_{1}=2^{n-4}$$ 
 Zaznaczając 1 raz 8 pól, zdobywamy więcej punktów, niż zaznaczając 2 razy 4 pola.
-$$2 *(4-3)^2 < (8-3)^2$$
-$$2 < 5^2$$
-$$2 < 25$$
+$$2*2^{4-4} < 2^{8-4}$$
+$$2 < 2^4$$
+$$2 < 16$$
 ### Czas
 Mając na dany poziom $t$ sekund i kończąc go w $e$ sekundzie punktację $p_{2}$ wyliczamy z wzoru
 $$p_{2} = (1-(e/t)) * x$$
