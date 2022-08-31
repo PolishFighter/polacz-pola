@@ -85,7 +85,7 @@ public class GameManager : MonoBehaviour
 
         if(gameState == GameState.nextLevel)
         {
-            if(levelInd < levels.Length - 1)
+            if(levelInd < levels.Length)
                 nextLevelSound.Play();
             pop.Stop();
             AddBonusForTime();
@@ -363,7 +363,6 @@ public class GameManager : MonoBehaviour
                 }
         }
     }
-    //BFS
     private int FindMaxPath(Color color,Coord coord, ref bool[,] boardVisited)
     {
         boardVisited[coord.x, coord.y] = true;
