@@ -32,7 +32,8 @@ public class GameManager : MonoBehaviour
     public AudioSource nextLevelSound;
     public Level[] levels = new Level[]{};
     public int timeBonusX = 100;
-    
+    public bool isRandomizeBoards = false;
+
     private Transform boardParent;
     private Transform floor;
 
@@ -56,6 +57,14 @@ public class GameManager : MonoBehaviour
     GUI gui;
     int[] countToPoints = new int[] {0, 0, 0, 0, 1, 4, 8, 16, 32, 64, 128, 256, 512};
     
+    void Awake()
+    {
+        if(isRandomizeBoards)
+        {
+            RandomizeBoards();
+        }
+    }
+
     void Start()
     {
         InitVars();
@@ -93,6 +102,15 @@ public class GameManager : MonoBehaviour
         }
 
     }
+
+    public void RandomizeBoards()
+    {
+        foreach(Level l in levels)
+        {
+            l.Randomize();
+        }
+    }
+
     private void InitGameOver()
     {
         gui.scoreGameOver.text = "Wynik\n" + score.ToString();

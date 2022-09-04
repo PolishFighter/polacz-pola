@@ -1224,7 +1224,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c6b15f865c03c75c7934f4881aeb4658, type: 2}
   - {fileID: 11400000, guid: 329b88a05bea91a638bbd462c7b9d4a5, type: 2}
   - {fileID: 11400000, guid: bcd190588ba3ecb048a782a41c6d9f78, type: 2}
+  - {fileID: 11400000, guid: bf394e69be8e97f10abe36ed18167a82, type: 2}
   timeBonusX: 200
+  isRandomizeBoards: 1
 --- !u!4 &1650235112
 Transform:
   m_ObjectHideFlags: 0

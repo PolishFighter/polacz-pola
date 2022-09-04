@@ -835,8 +835,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "Je\u017Celi masz pomys\u0142y na nowe poziomy, kod \u017Ar\xF3d\u0142owy
-    znajdziesz na moim profilu Github. M\xF3j nick to PolishFighter.\nDzi\u0119kuje."
+  m_Text: "Dzi\u0119kuj\u0119 za rozgrywk\u0119 :)"
 --- !u!222 &1966025767
 CanvasRenderer:
   m_ObjectHideFlags: 0

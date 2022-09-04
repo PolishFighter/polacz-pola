@@ -13,13 +13,7 @@ public class CustomInspectorLevel : Editor
 
         if(GUILayout.Button("Randomize board"))
         {
-            for(int i = 0; i < level.board.rows.Length; i++)
-            {
-                for(int j = 0; j < level.board.rows[i].row.Length; j++)
-                {
-                    level.board.rows[i].row[j] = (SquareColor) Random.Range(0, System.Enum.GetValues(typeof(SquareColor)).Length);
-                }
-            }
+           level.Randomize();
         }
     }
 }
